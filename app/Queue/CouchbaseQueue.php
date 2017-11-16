@@ -7,10 +7,12 @@ namespace App\Queue;
  * Time: 11:45
  */
 
+use Couchbase\Exception as CouchbaseException;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Queue\DatabaseQueue;
 use Illuminate\Queue\Jobs\DatabaseJob;
 use Illuminate\Queue\Jobs\DatabaseJobRecord;
+use Illuminate\Support\Facades\Log;
 use Mpociot\Couchbase\Connection;
 
 class CouchbaseQueue extends DatabaseQueue
@@ -58,6 +60,23 @@ class CouchbaseQueue extends DatabaseQueue
         $this->database = $database;
         $this->retryAfter = $retryAfter;
     }
+    /**
+     * Push a new job onto the queue.
+     *
+     * @param  string  $job
+     * @param  mixed   $data
+     * @param  string  $queue
+     * @return mixed
+     */
+    public function push($job, $data = '', $queue = null)
+    {
+        if(!is_null($queue)){
+            return parent::push($job, $data, (string) $queue);
+        }
+        return parent::push($job, $data, $queue);
+    }
+
+
     public function pop($queue = null)
     {
         $queue = $this->getQueue($queue);
@@ -89,7 +108,9 @@ class CouchbaseQueue extends DatabaseQueue
      */
     protected function marshalJob($queue, $job)
     {
-        $job = $this->markJobAsReserved($job);
+        if(!$job = $this->markJobAsReserved($job)){
+            return null;
+        }
         return new DatabaseJob(
             $this->container, $this, $job, $this->connectionName, $queue
         );
@@ -115,12 +136,22 @@ class CouchbaseQueue extends DatabaseQueue
      */
     protected function markJobAsReserved($job)
     {
-        // lock bucket
+
         $bucket = $this->database->getCouchbaseBucket();
-        $meta = $bucket->getAndLock($job->_id, 10);
-        $meta->value->attempts = $job->attempts + 1;
-        $meta->value->reserved_at = $job->touch();
-        $bucket->replace($job->_id, $meta->value, ['cas' => $meta->cas]);
+        try{
+            $meta = $bucket->getAndLock($job->_id, 5);// lock job
+            if($meta->value->attempts != $job->attempts){
+                $bucket->unlock($job->_id, ['cas' => $meta->cas]); //unlock if job worked on another process
+                return false; //miss job
+            }
+
+            $meta->value->attempts = $job->attempts + 1;
+            $meta->value->reserved_at = $job->touch();
+            $bucket->replace($job->_id, $meta->value, ['cas' => $meta->cas]);
+        }
+        catch (CouchbaseException $e){
+            return false;
+        }
         return $meta->value;
     }
 
@@ -171,3 +202,18 @@ class CouchbaseQueue extends DatabaseQueue
         return __CLASS__ . ':sequence';
     }
 }
+
+/**
+alias xphp='
+php -dxdebug.remote_enable=1 \
+-dxdebug.remote_host="10.0.10.160" \
+-dxdebug.remote_handler=dbgp \
+-dxdebug.remote_port=9000 \
+-dxdebug.remote_autostart=1 \
+-dxdebug.remote_log=/tmp/xdebug.log \
+-dxdebug.remote_connect_back=0'
+
+export PHP_IDE_CONFIG="serverName=queue"
+
+xphp artisan queue:work
+ */

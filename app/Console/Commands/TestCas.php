@@ -35,11 +35,25 @@ class TestCas extends Command
         $bucket = $connection->getCouchbaseBucket();
 
         $data = $bucket->getAndLock($model->_id, 20);
-        var_dump($model->_id);
-        $person = Person::where("rand", "=", $r)->first();
 
-        $person->age = 13000;
-        $person->save();
-        var_dump(Person::where("rand", "=", $r)->first()->age);
+        $model->age += 1;
+        var_dump($bucket->replace($model->_id, $model->attributesToArray(), ["cas" => $data->cas]));
+
+        $data = $bucket->getAndLock($model->_id, 20);
+        $model->age += 1;
+        var_dump($bucket->replace($model->_id, $model, $data->cas));
     }
 }
+
+/*
+alias xphp='
+php -dxdebug.remote_enable=1 \
+-dxdebug.remote_host="172.17.0.1" \
+-dxdebug.remote_handler=dbgp \
+-dxdebug.remote_port=9000 \
+-dxdebug.remote_autostart=1 \
+-dxdebug.remote_log=/tmp/xdebug.log \
+-dxdebug.remote_connect_back=0'
+
+export PHP_IDE_CONFIG="serverName=queue"
+ */

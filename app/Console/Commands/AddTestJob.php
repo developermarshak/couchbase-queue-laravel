@@ -16,9 +16,11 @@ class AddTestJob extends Command
     protected $signature = "testJob:add";
 
     function handle(){
-        for($i = 0; $i < 300; $i++){
-            $job = new TestJob();
-            Queue::push($job);
+        for($i = 0; $i < 30; $i++){
+            for($j = 1; $j <= 30; $j++){
+                $job = new TestJob();
+                Queue::push($job, '', $j);
+            }
         }
     }
 }
