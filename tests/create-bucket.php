@@ -26,7 +26,7 @@ class CreateBucketHelper
 
     function __construct()
     {
-        $globalConfig = require __DIR__ . "/../config/database.php";
+        $globalConfig = require __DIR__ . "/app/config/database.php";
 
         $this->config = $globalConfig['connections']['couchbase'];
         $this->bucketName = $this->config['bucket'];
