@@ -1,0 +1,13 @@
+image: registry.conci.info/conci/image/fpm:master
+
+before_script:
+  - composer install --no-interaction
+  - php tests/create-bucket.php
+
+services:
+  - name: registry.conci.info/conci/image/couchbase:master
+    alias: couchbase
+
+test:
+  script:
+    - php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text
