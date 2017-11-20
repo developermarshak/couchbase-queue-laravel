@@ -9,8 +9,7 @@ or add to your composer.json in section autoload
 "developermarshak/queue-couchbase": "0.*"
 `
 
-Register service providerS:
-
+Register service providers:
 ```
 '\Mpociot\Couchbase\CouchbaseServiceProvider::class'
 '\developermarshak\QueueCouchbase\CouchbaseQueueServiceProvider'
