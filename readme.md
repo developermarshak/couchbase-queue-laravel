@@ -15,7 +15,7 @@ Register service provider:
 'developermarshak\QueueCouchbase\CouchbaseQueueServiceProvider'
 `
 
-Run tests
+#Run tests
 
 ```
 php ./tests/create-bucket.php
