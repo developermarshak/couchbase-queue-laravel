@@ -1,8 +1,10 @@
 <?php
-namespace tests;
+namespace developermarshak\QueueCouchbase\tests;
 
 abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
 {
+    protected $connection = null;
+
     /**
      * Creates the application.
      *
@@ -10,6 +12,31 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
      */
     public function createApplication()
     {
-        return require __DIR__.'/../bootstrap/app.php';
+        return require __DIR__ . '/app/app.php';
+    }
+
+    function setUp()
+    {
+        parent::setUp();
+        $this->app->withFacades();
+    }
+
+    /**
+     * Get a database connection instance.
+     *
+     * @return \Mpociot\Couchbase\Connection
+     */
+    protected function connection()
+    {
+        if(is_null($this->connection)){
+            $this->connection = app('db')->connection('couchbase');
+        }
+        return $this->connection;
+    }
+
+    function tearDown()
+    {
+        $this->connection()->table('jobs')->delete();
+        parent::tearDown();
     }
 }

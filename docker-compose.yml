@@ -9,7 +9,7 @@ services:
           - couchbase
     ports:
        - "8091:8091"
-  php1:
+  php:
     image: registry.conci.info/conci/image/base:master
     networks:
       - internal
@@ -18,41 +18,5 @@ services:
     tty: true
     volumes:
       - ".:/opt/conci"
-  php2:
-      image: registry.conci.info/conci/image/base:master
-      networks:
-        - internal
-      depends_on:
-        - couchbase
-      tty: true
-      volumes:
-        - ".:/opt/conci"
-  php3:
-      image: registry.conci.info/conci/image/base:master
-      networks:
-        - internal
-      depends_on:
-        - couchbase
-      tty: true
-      volumes:
-        - ".:/opt/conci"
-  php4:
-      image: registry.conci.info/conci/image/base:master
-      networks:
-        - internal
-      depends_on:
-        - couchbase
-      tty: true
-      volumes:
-        - ".:/opt/conci"
-  php5:
-      image: registry.conci.info/conci/image/base:master
-      networks:
-        - internal
-      depends_on:
-        - couchbase
-      tty: true
-      volumes:
-        - ".:/opt/conci"
 networks:
   internal:

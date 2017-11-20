@@ -6,7 +6,7 @@
  * Time: 11:50
  */
 
-namespace App\Queue;
+namespace developermarshak\QueueCouchbase;
 
 use Illuminate\Container\Container;
 use \Illuminate\Contracts\Queue\Job as JobContract;

@@ -1,5 +1,5 @@
 <?php
-namespace App\Queue;
+namespace developermarshak\QueueCouchbase;
 /**
  * Created by PhpStorm.
  * User: admin

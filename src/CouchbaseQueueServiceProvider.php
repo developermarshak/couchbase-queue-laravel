@@ -6,9 +6,8 @@
  * Time: 11:42
  */
 
-namespace App\Providers;
+namespace developermarshak\QueueCouchbase;
 
-use App\Queue\CouchbaseConnector;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\ServiceProvider;
 

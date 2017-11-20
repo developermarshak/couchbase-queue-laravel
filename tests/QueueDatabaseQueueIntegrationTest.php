@@ -1,15 +1,11 @@
 <?php
 
-namespace Illuminate\Tests\Queue;
+namespace developermarshak\QueueCouchbase\tests;
 
-use App\Queue\CouchbaseQueue;
+use developermarshak\QueueCouchbase\CouchbaseQueue;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container;
 use Illuminate\Queue\DatabaseQueue;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Capsule\Manager as DB;
-use Mpociot\Couchbase\Eloquent\Model as Elequent;
 
 class QueueDatabaseQueueIntegrationTest extends TestCase
 {
@@ -30,17 +26,7 @@ class QueueDatabaseQueueIntegrationTest extends TestCase
 
     public function setUp()
     {
-        $db = new DB;
-
-        $db->addConnection([
-            'driver'    => 'sqlite',
-            'database'  => ':memory:',
-        ]);
-
-        $db->bootEloquent();
-
-        $db->setAsGlobal();
-
+        parent::setUp();
         $this->table = 'jobs';
 
         $this->queue = new CouchbaseQueue($this->connection(), $this->table);
@@ -48,57 +34,6 @@ class QueueDatabaseQueueIntegrationTest extends TestCase
         $this->container = $this->createMock(Container::class);
 
         $this->queue->setContainer($this->container);
-
-        $this->createSchema();
-    }
-
-    /**
-     * Setup the database schema.
-     *
-     * @return void
-     */
-    public function createSchema()
-    {
-        $this->schema()->create($this->table, function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('queue');
-            $table->longText('payload');
-            $table->tinyInteger('attempts')->unsigned();
-            $table->unsignedInteger('reserved_at')->nullable();
-            $table->unsignedInteger('available_at');
-            $table->unsignedInteger('created_at');
-            $table->index(['queue', 'reserved_at']);
-        });
-    }
-
-    /**
-     * Get a database connection instance.
-     *
-     * @return \Illuminate\Database\Connection
-     */
-    protected function connection()
-    {
-        return Eloque::getConnectionResolver()->connection();
-    }
-
-    /**
-     * Get a schema builder instance.
-     *
-     * @return \Illuminate\Database\Schema\Builder
-     */
-    protected function schema()
-    {
-        return $this->connection()->getSchemaBuilder();
-    }
-
-    /**
-     * Tear down the database schema.
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        $this->schema()->drop('jobs');
     }
 
     /**
@@ -142,9 +77,9 @@ class QueueDatabaseQueueIntegrationTest extends TestCase
 
         $popped_job = $this->queue->pop($job['queue']);
 
-        $database_record = $this->connection()->table('jobs')->find($job['id']);
+        $database_record = $this->connection()->table('jobs')->where("id", "=", $job['id'])->first();
 
-        $this->assertEquals(1, $database_record->attempts, 'Job attempts not updated in the database!');
+        $this->assertEquals(1, $database_record['attempts'], 'Job attempts not updated in the database!');
         $this->assertEquals(1, $popped_job->attempts(), 'The "attempts" attribute of the Job object was not updated by pop!');
     }
 
