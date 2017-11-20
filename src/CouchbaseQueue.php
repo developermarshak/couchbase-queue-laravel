@@ -202,18 +202,3 @@ class CouchbaseQueue extends DatabaseQueue
         return __CLASS__ . ':sequence';
     }
 }
-
-/**
-alias xphp='
-php -dxdebug.remote_enable=1 \
--dxdebug.remote_host="10.0.10.160" \
--dxdebug.remote_handler=dbgp \
--dxdebug.remote_port=9000 \
--dxdebug.remote_autostart=1 \
--dxdebug.remote_log=/tmp/xdebug.log \
--dxdebug.remote_connect_back=0'
-
-export PHP_IDE_CONFIG="serverName=queue"
-
-xphp artisan queue:work
- */
