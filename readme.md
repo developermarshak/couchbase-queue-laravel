@@ -9,11 +9,23 @@ or add to your composer.json in section autoload
 "developermarshak/queue-couchbase": "0.*"
 `
 
-Register service provider:
+Register service providerS:
 
-`
-'developermarshak\QueueCouchbase\CouchbaseQueueServiceProvider'
-`
+```
+'\Mpociot\Couchbase\CouchbaseServiceProvider::class'
+'\developermarshak\QueueCouchbase\CouchbaseQueueServiceProvider'
+```
+
+Copy queue config:
+```
+mkdir config
+cp ./vendor/developermarshak/queue-couchbase/src/config/queue.php ./config/
+```
+
+Set at .env queue driver couchbase:
+```
+QUEUE_DRIVER=couchbase
+```
 
 #Run tests
 
