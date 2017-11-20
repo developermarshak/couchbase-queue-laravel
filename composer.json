@@ -1,5 +1,5 @@
 {
-    "name": "developermarshak/QueueCouchbase",
+    "name": "developermarshak/queue-couchbase",
     "description": "The Laravel Lumen Framework.",
     "keywords": ["framework", "lumen", "couchbase", "queue"],
     "type": "library",

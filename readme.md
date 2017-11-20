@@ -1,12 +1,12 @@
 # Installation
 `
-composer require developermarshak/QueueCouchbase
+composer require developermarshak/queue-couchbase
 `
 
 or add to your composer.json in section autoload
 
 `
-"developermarshak/QueueCouchbase": "0.*"
+"developermarshak/queue-couchbase": "0.*"
 `
 
 Register service provider:
